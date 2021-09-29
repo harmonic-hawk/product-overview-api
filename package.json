@@ -1,0 +1,19 @@
+{
+  "name": "product-overview-api",
+  "version": "1.0.0",
+  "description": "Product Overview API Service",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/harmonic-hawk/product-overview-api.git"
+  },
+  "author": "Chris Schuhmacher",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/harmonic-hawk/product-overview-api/issues"
+  },
+  "homepage": "https://github.com/harmonic-hawk/product-overview-api#readme"
+}
