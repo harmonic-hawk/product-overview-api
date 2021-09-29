@@ -1,5 +1,5 @@
-// import mongoose from 'mongoose';
-// const { Schema } = mongoose;
+import mongoose from 'mongoose';
+const { Schema } = mongoose;
 
 const product = new Schema({
   name: { type: String, required: true },
@@ -27,10 +27,10 @@ const product = new Schema({
 
 const cartItems = new Schema({
   sku_id: { type: Number, required: true },
-  count: { type: Number, required: true };
+  count: { type: Number, required: true },
 });
 
 export {
   product,
   cartItems,
-}
+};
