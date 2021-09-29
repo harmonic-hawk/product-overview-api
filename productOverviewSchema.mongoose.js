@@ -24,3 +24,13 @@ const product = new Schema({
     five_star: { type: Number },
   },
 });
+
+const cartItems = new Schema({
+  sku_id: { type: Number, required: true },
+  count: { type: Number, required: true };
+});
+
+export {
+  product,
+  cartItems,
+}
