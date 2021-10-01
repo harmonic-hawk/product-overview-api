@@ -4,7 +4,9 @@
   "description": "Product Overview API Service",
   "main": "index.js",
   "scripts": {
-    "test": "npm test"
+    "test": "npm test",
+    "db:create": "psql -d postgres -f './db/schema_product_overview.sql'",
+    "db:seed": "psql -d mydb -f './db/seed_product_overview.sql'"
   },
   "repository": {
     "type": "git",
