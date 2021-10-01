@@ -1,3 +1,5 @@
+# Node modules
+node_modules
 .DS_Store
 # csv files
-csv
+csv.zip
