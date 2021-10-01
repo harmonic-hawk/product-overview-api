@@ -35,5 +35,6 @@ app.post('/cart', (req, res) => {
 });
 
 app.listen(port, () => {
+  // eslint-disable-next-line no-console
   console.log(`Server is now listening on Port ${port}`);
 });
