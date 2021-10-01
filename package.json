@@ -20,7 +20,8 @@
   },
   "homepage": "https://github.com/harmonic-hawk/product-overview-api#readme",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "pg-promise": "^10.11.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.13"
