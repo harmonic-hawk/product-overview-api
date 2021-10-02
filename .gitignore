@@ -2,4 +2,6 @@
 node_modules
 .DS_Store
 # csv files
-csv.zip
+db/csv
+db/csv.zip
+

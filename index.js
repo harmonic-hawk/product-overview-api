@@ -40,16 +40,16 @@ app.get('/products/:product_id/styles', (req, res) => {
   res.send(`get styles by product id : ${req.params.product_id}`);
 });
 
-app.get('/products/:product_id/related', (req, res) => {
+app.get('/products/:product_id/related', async (req, res) => {
   const pid = req.params.product_id;
+  // Limit related ids to 20
+  db.manyOrNone(`SELECT id FROM product WHERE category IN (SELECT category FROM product WHERE id=${pid}) LIMIT 20`)
+    .then((results) => {
+      const ids = results.map((item) => item.id);
 
-  db.any(`SELECT * from related WHERE product_id=${pid}`)
-    .then((data) => {
-      res.send(data);
+      res.send(ids);
     })
-    .catch((err) => {
-      res.sendStatus(404).send(new Error(err));
-    });
+    .catch((err) => console.log(err));
 });
 
 app.get('/cart', (req, res) => {
