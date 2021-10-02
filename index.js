@@ -36,11 +36,39 @@ app.get('/products/:product_id', (req, res) => {
     });
 });
 
-app.get('/products/:product_id/styles', (req, res) => {
-  res.send(`get styles by product id : ${req.params.product_id}`);
+app.get('/products/:product_id/styles', async (req, res) => {
+  const pid = req.params.product_id;
+
+  db.task((t) =>
+    // execute a chain of queries against the task context, and return the result:
+    t.any('SELECT * FROM style WHERE product_id = $1', pid)
+      .then((results) => {
+        const promises = results.map((style) => db.any('SELECT * FROM photo WHERE style_id = $1', style.id)
+          .then((photos) => {
+            const temp = style;
+            temp.photos = photos;
+            return style;
+          }));
+
+        return Promise.all(promises).then((values) => values);
+      }))
+    .then((results) => {
+      const promises = results.map((style) => db.any('SELECT * FROM sku WHERE style_id = $1', style.id)
+        .then((skus) => {
+          const temp = style;
+          temp.skus = skus;
+          return temp;
+        }));
+
+      return Promise.all(promises).then((values) => values);
+    })
+    .then((data) => res.send(data))
+    .catch((err) => {
+      console.log(err);
+    });
 });
 
-app.get('/products/:product_id/related', async (req, res) => {
+app.get('/products/:product_id/related', (req, res) => {
   const pid = req.params.product_id;
   // Limit related ids to 20
   db.manyOrNone(`SELECT id FROM product WHERE category IN (SELECT category FROM product WHERE id=${pid}) LIMIT 20`)
