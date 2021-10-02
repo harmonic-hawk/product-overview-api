@@ -12,11 +12,28 @@ app.get('/', (req, res) => {
 });
 
 app.get('/products', (req, res) => {
-  res.send('get all products');
+  // Test connection here
+  db.any('SELECT * FROM product LIMIT 50')
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.sendStatus(404).send(new Error(err));
+    });
 });
 
 app.get('/products/:product_id', (req, res) => {
-  res.send(`get product by product id : ${req.params.product_id}`);
+  const pid = req.params.product_id;
+  const query = `SELECT * FROM product WHERE id=${pid}`;
+
+  db.oneOrNone(query)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      // log error here
+      res.sendStatus(404).send(new Error(err));
+    });
 });
 
 app.get('/products/:product_id/styles', (req, res) => {
@@ -24,7 +41,15 @@ app.get('/products/:product_id/styles', (req, res) => {
 });
 
 app.get('/products/:product_id/related', (req, res) => {
-  res.send(`get related products ids by product id : ${req.params.product_id}`);
+  const pid = req.params.product_id;
+
+  db.any(`SELECT * from related WHERE product_id=${pid}`)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.sendStatus(404).send(new Error(err));
+    });
 });
 
 app.get('/cart', (req, res) => {
