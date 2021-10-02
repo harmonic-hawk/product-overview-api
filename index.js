@@ -12,8 +12,9 @@ app.get('/', (req, res) => {
 });
 
 app.get('/products', (req, res) => {
+  const query = 'SELECT * FROM product LIMIT 50';
   // Test connection here
-  db.any('SELECT * FROM product LIMIT 50')
+  db.any(query)
     .then((data) => {
       res.send(data);
     })
@@ -24,9 +25,9 @@ app.get('/products', (req, res) => {
 
 app.get('/products/:product_id', (req, res) => {
   const pid = req.params.product_id;
-  const query = `SELECT * FROM product WHERE id=${pid}`;
+  const query = 'SELECT * FROM product WHERE id = $1';
 
-  db.oneOrNone(query)
+  db.oneOrNone(query, pid)
     .then((data) => {
       res.send(data);
     })
