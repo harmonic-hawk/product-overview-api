@@ -4,4 +4,6 @@ node_modules
 # csv files
 db/csv
 db/csv.zip
+# New Relic config
+newrelic.js
 
