@@ -10,7 +10,7 @@ CREATE DATABASE mydb;
 
 /* Table 'product' */
 CREATE TABLE product(
-  id integer NOT NULL,
+  id SERIAL NOT NULL,
   "name" varchar(30) NOT NULL,
   slogan varchar(255) NOT NULL,
   description varchar(512) NOT NULL,
@@ -21,7 +21,7 @@ CREATE TABLE product(
 
 /* Table 'feature' */
 CREATE TABLE feature(
-  id integer NOT NULL,
+  id SERIAL NOT NULL,
   product_id integer NOT NULL,
   feature varchar(64) NOT NULL,
   "value" varchar(64),
@@ -30,7 +30,7 @@ CREATE TABLE feature(
 
 /* Table 'style' */
 CREATE TABLE style(
-  id integer NOT NULL,
+  id SERIAL NOT NULL,
   product_id integer NOT NULL,
   "name" varchar(30) NOT NULL,
   sale_price varchar(30),
@@ -41,7 +41,7 @@ CREATE TABLE style(
 
 /* Table 'sku' */
 CREATE TABLE sku(
-  id integer NOT NULL,
+  id SERIAL NOT NULL,
   style_id integer NOT NULL,
   size varchar NOT NULL,
   quantity integer,
@@ -50,7 +50,7 @@ CREATE TABLE sku(
 
 /* Table 'photo' */
 CREATE TABLE photo(
-  id integer NOT NULL,
+  id SERIAL NOT NULL,
   style_id integer NOT NULL,
   url varchar,
   thumbnail_url varchar,
@@ -59,10 +59,10 @@ CREATE TABLE photo(
 
 /* Table 'cart' */
 CREATE TABLE cart(
-  id integer NOT NULL,
-  user_session integer NOT NULL,
+  id SERIAL NOT NULL,
+  user_session integer,
   product_id integer NOT NULL,
-  active integer NOT NULL,
+  active integer,
   PRIMARY KEY(id)
 );
 

@@ -81,7 +81,14 @@ app.get('/cart', (req, res) => {
 });
 
 app.post('/cart', (req, res) => {
-  res.send('post an item to the cart');
+  const skuId = req.body.sku_id;
+  const query = 'INSERT INTO cart(product_id, user_session, active) VALUES($1, 1234, 1)';
+
+  db.none(query, skuId)
+    .then(() => {
+      res.send(`sku id ${skuId} has been added to the database.`);
+    })
+    .catch((err) => res.send(new Error(err)));
 });
 
 app.listen(port, () => {
