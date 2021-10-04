@@ -12,7 +12,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/products', (req, res) => {
-  const query = 'SELECT * FROM product LIMIT 50';
+  const query = 'SELECT * FROM product ORDER BY id LIMIT 50';
   // Test connection here
   db.any(query)
     .then((data) => {
@@ -38,13 +38,19 @@ app.get('/products/:product_id', (req, res) => {
 
 app.get('/products/:product_id/styles', async (req, res) => {
   const pid = req.params.product_id;
-  const query = `SELECT s.id, s.name, s.sale_price, s.original_price, s.default AS "default?",
-  json_agg(json_build_object('url', p.url, 'thumbnail_url', p.thumbnail_url)) AS photos,
-  json_object_agg(sku.id, json_build_object('size', sku.size, 'quantity', sku.quantity)) AS skus
+  const query = `SELECT s.id, s.name, s.sale_price, s.original_price, s.default AS "default?", p.photos, sku.skus
   FROM style s
-  INNER JOIN sku sku ON s.id = sku.style_id
-  INNER JOIN photo p ON s.id = p.style_id
-  WHERE s.product_id = $1 GROUP BY s.id`;
+  LEFT JOIN LATERAL (
+    SELECT jsonb_agg(jsonb_build_object('url', p.url, 'thumbnail_url', p.thumbnail_url)) AS photos
+    FROM photo p
+    WHERE s.id = p.style_id
+  ) p ON true
+  LEFT JOIN LATERAL (
+    SELECT jsonb_object_agg(sku.id, jsonb_build_object('size', sku.size, 'quantity', sku.quantity)) AS skus
+    FROM sku
+    WHERE s.id = sku.style_id
+  ) sku ON true
+  WHERE s.product_id = $1 GROUP BY s.id, p.photos, sku.skus`;
 
   db.any(query, pid)
     .then((data) => {
