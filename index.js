@@ -19,60 +19,47 @@ app.get('/products', (req, res) => {
       res.send(data);
     })
     .catch((err) => {
+      console.log('error:: ', err);
       res.sendStatus(404).send(new Error(err));
     });
 });
 
 app.get('/products/:product_id', (req, res) => {
   const pid = req.params.product_id;
-  const query = 'SELECT * FROM product WHERE id = $1';
+  const query = `SELECT p.id, p.name, p.slogan, p.description, p.category, p.default_price, json_agg(json_build_object('feature', f.feature, 'value', f.value)) AS features
+                 FROM feature f INNER JOIN product p ON f.product_id = p.id WHERE p.id = $1 GROUP BY p.id;`;
 
-  db.oneOrNone(query, pid)
+  db.any(query, pid)
     .then((data) => {
       res.send(data);
     })
-    .catch((err) => {
-      // log error here
-      res.sendStatus(404).send(new Error(err));
-    });
+    .catch((err) => res.sendStatus(404).send(new Error(err)));
 });
 
 app.get('/products/:product_id/styles', async (req, res) => {
   const pid = req.params.product_id;
+  const query = `SELECT s.id, s.name, s.sale_price, s.original_price, s.default AS "default?",
+  json_agg(json_build_object('url', p.url, 'thumbnail_url', p.thumbnail_url)) AS photos,
+  json_object_agg(sku.id, json_build_object('size', sku.size, 'quantity', sku.quantity)) AS skus
+  FROM style s
+  INNER JOIN sku sku ON s.id = sku.style_id
+  INNER JOIN photo p ON s.id = p.style_id
+  WHERE s.product_id = $1 GROUP BY s.id`;
 
-  db.task((t) =>
-    // execute a chain of queries against the task context, and return the result:
-    t.any('SELECT * FROM style WHERE product_id = $1', pid)
-      .then((results) => {
-        const promises = results.map((style) => db.any('SELECT * FROM photo WHERE style_id = $1', style.id)
-          .then((photos) => {
-            const temp = style;
-            temp.photos = photos;
-            return style;
-          }));
-
-        return Promise.all(promises).then((values) => values);
-      }))
-    .then((results) => {
-      const promises = results.map((style) => db.any('SELECT * FROM sku WHERE style_id = $1', style.id)
-        .then((skus) => {
-          const temp = style;
-          temp.skus = skus;
-          return temp;
-        }));
-
-      return Promise.all(promises).then((values) => values);
+  db.any(query, pid)
+    .then((data) => {
+      res.send({
+        product_id: pid,
+        results: data,
+      });
     })
-    .then((data) => res.send(data))
-    .catch((err) => {
-      console.log(err);
-    });
+    .catch((err) => res.sendStatus(404).send(new Error(err)));
 });
 
 app.get('/products/:product_id/related', (req, res) => {
   const pid = req.params.product_id;
   // Limit related ids to 20
-  db.manyOrNone(`SELECT id FROM product WHERE category IN (SELECT category FROM product WHERE id=${pid}) LIMIT 20`)
+  db.any(`SELECT id FROM product WHERE category IN (SELECT category FROM product WHERE id=${pid}) LIMIT 20`)
     .then((results) => {
       const ids = results.map((item) => item.id);
 
@@ -82,7 +69,15 @@ app.get('/products/:product_id/related', (req, res) => {
 });
 
 app.get('/cart', (req, res) => {
-  res.send('get all products in cart');
+  const { sessionId } = req.query;
+
+  const query = 'SELECT product_id AS sku_id, COUNT(product_id) AS count FROM cart WHERE user_session = $1 GROUP BY product_id';
+
+  db.any(query, sessionId)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => res.sendStatus(404).send(new Error(err)));
 });
 
 app.post('/cart', (req, res) => {

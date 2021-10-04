@@ -6,12 +6,6 @@ CREATE DATABASE mydb;
 -- connect to new database
 \c mydb;
 
--- 2. Create schema
-CREATE SCHEMA IF NOT EXISTS product_overview;
-
--- Set search path to use schema
-SET search_path TO product_overview, public;
-
 -- 3. Create tables
 
 /* Table 'product' */
