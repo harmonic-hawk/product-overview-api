@@ -6,4 +6,5 @@ db/csv
 db/csv.zip
 # New Relic config
 newrelic.js
+newrelic_agent.log
 
