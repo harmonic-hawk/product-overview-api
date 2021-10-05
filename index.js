@@ -28,7 +28,7 @@ app.get('/products', (req, res) => {
 app.get('/products/:product_id', (req, res) => {
   const pid = req.params.product_id;
   const query = `SELECT p.id, p.name, p.slogan, p.description, p.category, p.default_price, json_agg(json_build_object('feature', f.feature, 'value', f.value)) AS features
-                 FROM feature f INNER JOIN product p ON f.product_id = p.id WHERE p.id = $1 GROUP BY p.id;`;
+                 FROM product p INNER JOIN feature f ON f.product_id = p.id WHERE p.id = $1 GROUP BY p.id`;
 
   db.any(query, pid)
     .then((data) => {
@@ -66,7 +66,7 @@ app.get('/products/:product_id/styles', async (req, res) => {
 app.get('/products/:product_id/related', (req, res) => {
   const pid = req.params.product_id;
   // Limit related ids to 20
-  db.any(`SELECT id FROM product WHERE category IN (SELECT category FROM product WHERE id=${pid}) LIMIT 20`)
+  db.any(`SELECT id FROM product WHERE category IN (SELECT category FROM product WHERE id=${pid})`)
     .then((results) => {
       const ids = results.map((item) => item.id);
 
