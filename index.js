@@ -32,7 +32,8 @@ app.get('/products/:product_id', (req, res) => {
 
   db.any(query, pid)
     .then((data) => {
-      res.send(data);
+      // this returns an array with one item, only send the first item
+      res.send(data[0]);
     })
     .catch((err) => res.sendStatus(404).send(new Error(err)));
 });
