@@ -8,10 +8,6 @@ const port = 5000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/', (req, res) => {
-  res.send('hello world');
-});
-
 app.get('/products', (req, res) => {
   const query = 'SELECT * FROM product ORDER BY id LIMIT 50';
   // Test connection here
@@ -20,7 +16,6 @@ app.get('/products', (req, res) => {
       res.send(data);
     })
     .catch((err) => {
-      console.log('error:: ', err);
       res.sendStatus(404).send(new Error(err));
     });
 });
@@ -73,7 +68,7 @@ app.get('/products/:product_id/related', (req, res) => {
 
       res.send(ids);
     })
-    .catch((err) => console.log(err));
+    .catch((err) => res.sendStatus(404).send(new Error(err)));
 });
 
 app.get('/cart', (req, res) => {
