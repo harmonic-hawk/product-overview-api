@@ -21,7 +21,7 @@ export default () => {
     const MAX_PRODUCT_ID = 1000011;
     const randomProductId = Math.floor(Math.random() * MAX_PRODUCT_ID);
 
-    const getProductById = http.get(`http://localhost:3000/products/${randomProductId}`);
+    const getProductById = http.get(`http://localhost:5000/products/${randomProductId}`);
 
     check(getProductById, {
       'is status 200': (r) => r.status === 200,
@@ -32,7 +32,7 @@ export default () => {
 
     const randomProductIdForStyles = Math.floor(Math.random() * MAX_PRODUCT_ID);
 
-    const getStylesById = http.get(`http://localhost:3000/products/${randomProductIdForStyles}/styles`);
+    const getStylesById = http.get(`http://localhost:5000/products/${randomProductIdForStyles}/styles`);
 
     check(getStylesById, {
       'is status 200': (r) => r.status === 200,
