@@ -10,7 +10,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.get('/products', (req, res) => {
   const query = 'SELECT * FROM product ORDER BY id LIMIT 50';
-  // Test connection here
+
   db.any(query)
     .then((data) => {
       res.send(data);
